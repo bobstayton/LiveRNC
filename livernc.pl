@@ -2,7 +2,7 @@
 #
 #  livernc.pl - generate an html version of a RNC
 #
-# $Id: livernc.pl,v 1.21 2006/11/10 09:29:31 bobs Exp $
+# $Id: livernc.pl,v 1.22 2015/05/26 19:27:36 bobs Exp $
 #
 # Copyright (c) 2000-2005 Robert Stayton
 # 
@@ -604,9 +604,6 @@ sub parsefile {
           elsif ( $decl =~ /$nsre/s ) {
             &writens($decl, $Filename, $Output);
           }
-          elsif ( $decl =~ /$quotere/s ) {
-            &writequote($decl, $Filename, $Output);
-          }
           elsif ( $decl =~ /$schemere/s ) {
             ($fulldecl, $rest) = &fullschemedecl($decl, $rest);
             &writescheme($fulldecl, $Filename, $Output);
@@ -629,6 +626,9 @@ sub parsefile {
           }
           elsif ( $decl =~ /$comre/s ) {
             &writecom($decl, $Filename, $Output);
+          }
+          elsif ( $decl =~ /$quotere/s ) {
+            &writequote($decl, $Filename, $Output);
           }
 
           $longstring = $rest;
@@ -1103,8 +1103,16 @@ sub writeinc {
     my $decl = shift;
     my $Filename = shift;
     my $Output = shift;
+    my $name;
 
+    # Print the include line
     print $Output &html($decl) if $Output;
+
+    # Parse the included file
+    $decl =~ /$incre/;
+    $name = $2;
+
+    &parsefile($name);
 }
 
 #######################################################
